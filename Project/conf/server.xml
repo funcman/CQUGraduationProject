@@ -45,6 +45,14 @@
               pathname="conf/tomcat-users.xml" />
   </GlobalNamingResources>
 
+  <!-- CQU -->
+  <Service name="CQU">
+      <Connector port="8888" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+      <Engine name="CQU" defaultHost="localhost">
+          <Host name="localhost" appBase="CQU" />
+      </Engine>
+  </Service>
+
   <!-- A "Service" is a collection of one or more "Connectors" that share
        a single "Container" Note:  A "Service" is not itself a "Container",
        so you may not define subcomponents such as "Valves" at this level.
