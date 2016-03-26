@@ -1,2 +1,4 @@
 Project/logs/*
 Project/work/*
+Project/temp/*
+*.class
