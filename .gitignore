@@ -3,3 +3,4 @@ Project/work/*
 Project/temp/*
 *.class
 *.sqlite
+*.swp

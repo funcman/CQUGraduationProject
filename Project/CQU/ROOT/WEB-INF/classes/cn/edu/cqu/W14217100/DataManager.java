@@ -47,6 +47,7 @@ public class DataManager {
             if (c != null) {
                 Statement st = this.getStatement(c);
                 if (st != null) {
+                    // user
                     st.setQueryTimeout(30);
                     st.executeUpdate("drop table if exists user");
                     st.executeUpdate("create table user (id integer primary key autoincrement, name string not null, pwd string not null, rank string not null)");
@@ -58,6 +59,15 @@ public class DataManager {
                         System.out.println("pwd = "+rs.getString("pwd"));
                         System.out.println("rank = "+rs.getString("rank"));
                     }
+                    // article
+                    st.executeUpdate("drop table if exists article");
+                    st.executeUpdate("create table article (id integer primary key autoincrement, name string not null, content text not null)");
+                    // list
+                    st.executeUpdate("drop table if exists list");
+                    st.executeUpdate("create table list (id integer primary key autoincrement, name string not null, parent integer)");
+                    // drug
+                    st.executeUpdate("drop table if exists drug");
+                    st.executeUpdate("create table drug (id integer primary key autoincrement, name string not null, list integer not null, introduction text not null)");
                     initFile.delete();
                     rs.close();
                     st.close();
@@ -242,6 +252,77 @@ public class DataManager {
         String usersArray[] = new String[users.size()];
         usersArray = users.toArray(usersArray);
         return usersArray;
+    }
+
+    public boolean addArticle(String name, String content) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("insert into article(name, content) values('"+name+"', '"+content+"')") > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean deleteArticle(String id) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("delete from article where id="+id) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public Map[] allArticles() {
+        ArrayList<Map> articles = new ArrayList<Map>();
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from article");
+                    while (rs.next()) {
+                        HashMap<String,String> article = new HashMap<String,String>();
+                        article.put("id",       rs.getString("id"));
+                        article.put("name",     rs.getString("name"));
+                        //article.put("content",  rs.getString("content"));
+                        articles.add(article);
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        Map articlesArray[] = new Map[articles.size()];
+        articlesArray = articles.toArray(articlesArray);
+        return articlesArray;
     }
 }
 
