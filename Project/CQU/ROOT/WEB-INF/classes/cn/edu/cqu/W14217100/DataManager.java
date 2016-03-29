@@ -254,6 +254,32 @@ public class DataManager {
         return usersArray;
     }
 
+    public Map getArticle(String id) {
+        HashMap<String,String> article = null;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from article where id="+id);
+                    if (rs.next()) {
+                        article = new HashMap<String,String>();
+                        //article.put("id",       rs.getString("id"));
+                        article.put("name",     rs.getString("name"));
+                        article.put("content",  rs.getString("content"));
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return article;
+    }
+
     public boolean addArticle(String name, String content) {
         boolean ret = false;
         try {
@@ -262,6 +288,27 @@ public class DataManager {
                 Statement st = this.getStatement(c);
                 if (st != null) {
                     if (st.executeUpdate("insert into article(name, content) values('"+name+"', '"+content+"')") > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean modifyArticle(String id, String name, String content) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("update article set name='"+name+"', content='"+content+"' where id="+id) > 0) {
                         ret = true;
                     }
                     st.close();
