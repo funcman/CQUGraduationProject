@@ -5,12 +5,12 @@
 
 <%
     request.setCharacterEncoding("UTF-8");
-    String id       = request.getParameter("id");
-    String name     = request.getParameter("name");
-    String content  = request.getParameter("content");
+    String id           = request.getParameter("id");
+    String name         = request.getParameter("name");
+    String content      = request.getParameter("content");
     if (id != null && (name == null || content == null)) {
-        DataManager dm      = new DataManager();
-        Map article         = dm.getArticle(id);
+        DataManager dm  = new DataManager();
+        Map article     = dm.getArticle(id);
 %>
 <html>
     <head>
@@ -18,8 +18,11 @@
     </head>
     <body>
         <form method="POST" action="mod_article.jsp?id=<%=id%>">
-            <p>文章名<input type="text" name="name"  value="<%=article.get("name").toString()%>"/></p>
-            <p>内容<textarea rows="10" cols="30" name="content"><%=article.get("content").toString()%></textarea></p>
+            <p>文章名</p>
+            <input type="text" name="name" value="<%=article.get("name").toString()%>"/>
+            <p>内容</p>
+            <textarea rows="10" cols="30" name="content"><%=article.get("content").toString()%></textarea>
+            <br/>
             <input type="submit" value="提交" />
         </form>
     </body>

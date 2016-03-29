@@ -371,5 +371,125 @@ public class DataManager {
         articlesArray = articles.toArray(articlesArray);
         return articlesArray;
     }
+
+    public Map getDrug(String id) {
+        HashMap<String,String> drug = null;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from drug where id="+id);
+                    if (rs.next()) {
+                        drug = new HashMap<String,String>();
+                        //drug.put("id",              rs.getString("id"));
+                        drug.put("name",            rs.getString("name"));
+                        drug.put("list",            rs.getString("list"));
+                        drug.put("introduction",    rs.getString("introduction"));
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return drug;
+    }
+
+    public boolean addDrug(String name, String list, String introduction) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("insert into drug(name, list, introduction) values('"+name+"', "+list+", '"+introduction+"')") > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean modifyDrug(String id, String name, String list, String introduction) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("update drug set name='"+name+"', list="+list+", introduction='"+introduction+"' where id="+id) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean deleteDrug(String id) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("delete from drug where id="+id) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public Map[] allDrugs() {
+        ArrayList<Map> drugs = new ArrayList<Map>();
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from drug");
+                    while (rs.next()) {
+                        HashMap<String,String> drug = new HashMap<String,String>();
+                        drug.put("id",              rs.getString("id"));
+                        drug.put("name",            rs.getString("name"));
+                        //drug.put("list",            rs.getString("list"));
+                        //drug.put("introduction",    rs.getString("introduction"));
+                        drugs.add(drug);
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        Map drugsArray[] = new Map[drugs.size()];
+        drugsArray = drugs.toArray(drugsArray);
+        return drugsArray;
+    }
 }
 

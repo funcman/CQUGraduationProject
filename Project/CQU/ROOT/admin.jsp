@@ -30,6 +30,31 @@
             <br/>
             <input type="submit" value="提交" />
         </form>
+        <hr/>
+        <h1>药品列表</h1>
+<%
+    for (Map drug : dm.allDrugs()) {
+%>
+        <p><%=drug.get("id").toString()%>, <%=drug.get("name").toString()%>
+            <a href="del_drug.jsp?id=<%=drug.get("id").toString()%>">删除</a>
+            <a href="mod_drug.jsp?id=<%=drug.get("id").toString()%>">修改</a>
+        </p>
+<%
+    }
+%>
+        <hr/>
+        <h1>添加药品</h1>
+        <form method="POST" action="add_drug.jsp">
+            <p>药品名</p>
+            <input type="text" name="name" />
+            <p>类别</p>
+            <input type="text" name="list" />
+            <p>介绍</p>
+            <textarea rows="10" cols="30" name="introduction"></textarea>
+            <br/>
+            <input type="submit" value="提交" />
+        </form>
+
     </body>
 </html>
 
