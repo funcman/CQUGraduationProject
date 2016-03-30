@@ -127,6 +127,32 @@ public class DataManager {
         return ret;
     }
 
+    public Map getUser(String id) {
+        HashMap<String,String> user = null;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from user where id="+id);
+                    if (rs.next()) {
+                        user = new HashMap<String,String>();
+                        //user.put("id",              rs.getString("id"));
+                        user.put("name",            rs.getString("name"));
+                        user.put("pwd",             rs.getString("pwd"));
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     public boolean addUser(String name, String pwd) {
         boolean ret = false;
         try {
@@ -152,17 +178,38 @@ public class DataManager {
         return ret;
     }
 
-    public boolean deleteUser(String name) {
+    public boolean modifyUser(String id, String name, String pwd) {
         boolean ret = false;
         try {
             Connection c = this.getConnection();
             if (c != null) {
                 Statement st = this.getStatement(c);
                 if (st != null) {
-                    ResultSet rs = st.executeQuery("select * from user where name='"+name+"'");
+                    if (st.executeUpdate("update user set name='"+name+"', pwd='"+pwd+"' where id="+id) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean deleteUser(String id) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from user where id="+id);
                     if (rs.next()) {
-                        if (!rs.getString("name").equals("admin")) {
-                            if (st.executeUpdate("delete from user where name='"+name+"'") > 0) {
+                        if (!rs.getString("name").equals("sa")) {
+                            if (st.executeUpdate("delete from user where id="+id) > 0) {
                                 ret = true;
                             }
                         }
@@ -200,22 +247,22 @@ public class DataManager {
         return ret;
     }
 
-    public boolean incUserRank(String name) {
-        return this.setUserRank(name, "admin");
+    public boolean incUserRank(String id) {
+        return this.setUserRank(id, "admin");
     }
 
-    public boolean decUserRank(String name) {
-        return this.setUserRank(name, "user");
+    public boolean decUserRank(String id) {
+        return this.setUserRank(id, "user");
     }
 
-    public boolean setUserRank(String name, String rank) {
+    private boolean setUserRank(String id, String rank) {
         boolean ret = false;
         try {
             Connection c = this.getConnection();
             if (c != null) {
                 Statement st = this.getStatement(c);
                 if (st != null) {
-                    if (st.executeUpdate("update user set rank='"+rank+"' where name='"+name+"'") > 0) {
+                    if (st.executeUpdate("update user set rank='"+rank+"' where id="+id) > 0) {
                         ret = true;
                     }
                     st.close();
@@ -227,6 +274,35 @@ public class DataManager {
             e.printStackTrace();
         }
         return ret;
+    }
+
+    public Map[] allUsers() {
+        ArrayList<Map> users = new ArrayList<Map>();
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from user");
+                    while (rs.next()) {
+                        HashMap<String,String> user = new HashMap<String,String>();
+                        user.put("id",      rs.getString("id"));
+                        user.put("name",    rs.getString("name"));
+                        //user.put("pwd",     rs.getString("pwd"));
+                        user.put("rank",    rs.getString("rank"));
+                        users.add(user);                        
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Map usersArray[] = new Map[users.size()];
+        usersArray = users.toArray(usersArray);
+        return usersArray;
     }
 
     public String[] allAdmin() {
@@ -370,6 +446,125 @@ public class DataManager {
         Map articlesArray[] = new Map[articles.size()];
         articlesArray = articles.toArray(articlesArray);
         return articlesArray;
+    }
+
+    public Map getList(String id) {
+        HashMap<String,String> list = null;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from list where id="+id);
+                    if (rs.next()) {
+                        list = new HashMap<String,String>();
+                        //list.put("id",              rs.getString("id"));
+                        list.put("name",            rs.getString("name"));
+                        list.put("parent",          rs.getString("parent"));
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean addList(String name, String parent) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("insert into list(name, parent) values('"+name+"', "+parent+")") > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean modifyList(String id, String name, String parent) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("update list set name='"+name+"', parent="+parent) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public boolean deleteList(String id) {
+        boolean ret = false;
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    if (st.executeUpdate("delete from list where id="+id) > 0) {
+                        ret = true;
+                    }
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public Map[] allLists() {
+        ArrayList<Map> lists = new ArrayList<Map>();
+        try {
+            Connection c = this.getConnection();
+            if (c != null) {
+                Statement st = this.getStatement(c);
+                if (st != null) {
+                    ResultSet rs = st.executeQuery("select * from list");
+                    while (rs.next()) {
+                        HashMap<String,String> list = new HashMap<String,String>();
+                        list.put("id",              rs.getString("id"));
+                        list.put("name",            rs.getString("name"));
+                        //list.put("list",            rs.getString("list"));
+                        //list.put("introduction",    rs.getString("introduction"));
+                        lists.add(list);
+                    }
+                    rs.close();
+                    st.close();
+                }
+                c.close();
+            }
+        }catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+        }
+        Map listsArray[] = new Map[lists.size()];
+        listsArray = lists.toArray(listsArray);
+        return listsArray;
     }
 
     public Map getDrug(String id) {
