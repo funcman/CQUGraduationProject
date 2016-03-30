@@ -2,6 +2,7 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*,cn.edu.cqu.W14217100.*" %>
 <jsp:include page="/inc/initdb.jsp" />
+<%@ include  file="/inc/admin_verification.jsp" %>
 
 <%
     request.setCharacterEncoding("UTF-8");
